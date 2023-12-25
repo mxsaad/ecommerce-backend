@@ -1,0 +1,23 @@
+# Node.js
+node_modules/
+
+# Editor
+.vscode/
+
+# Logs
+logs/
+
+# Dependency directory
+.sql/
+
+# Environment variables
+.env
+
+# Compiled binary addons
+build/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
