@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `Admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Admin` (
-  `AdminID` int NOT NULL,
+  `AdminID` int NOT NULL AUTO_INCREMENT,
   `FirstName` varchar(16) NOT NULL,
   `LastName` varchar(16) NOT NULL,
   `Username` varchar(16) NOT NULL,
@@ -55,7 +55,7 @@ DROP TABLE IF EXISTS `Cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Cart` (
-  `CartID` int NOT NULL,
+  `CartID` int NOT NULL AUTO_INCREMENT,
   `CustomerID` int NOT NULL,
   `Total` decimal(16,2) DEFAULT '0.00',
   PRIMARY KEY (`CartID`),
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS `Category`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Category` (
-  `CategoryID` int NOT NULL,
+  `CategoryID` int NOT NULL AUTO_INCREMENT,
   `CategoryName` varchar(16) NOT NULL,
   `CategoryDescription` varchar(64) NOT NULL,
   PRIMARY KEY (`CategoryID`),
@@ -110,7 +110,7 @@ DROP TABLE IF EXISTS `Customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Customer` (
-  `CustomerID` int NOT NULL,
+  `CustomerID` int NOT NULL AUTO_INCREMENT,
   `FirstName` varchar(16) NOT NULL,
   `LastName` varchar(16) NOT NULL,
   `Username` varchar(16) NOT NULL,
@@ -143,7 +143,7 @@ DROP TABLE IF EXISTS `Discount`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Discount` (
-  `DiscountID` int NOT NULL,
+  `DiscountID` int NOT NULL AUTO_INCREMENT,
   `DiscountName` varchar(16) DEFAULT 'Coupon',
   `DiscountDescription` varchar(32) DEFAULT NULL,
   `Active` int DEFAULT '0',
@@ -171,7 +171,7 @@ DROP TABLE IF EXISTS `HomeAddress`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `HomeAddress` (
-  `AddressID` int NOT NULL,
+  `AddressID` int NOT NULL AUTO_INCREMENT,
   `CustomerID` int NOT NULL,
   `Line1` varchar(32) NOT NULL,
   `Line2` varchar(32) DEFAULT NULL,
@@ -221,7 +221,7 @@ DROP TABLE IF EXISTS `OnlineOrder`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `OnlineOrder` (
-  `OrderID` int NOT NULL,
+  `OrderID` int NOT NULL AUTO_INCREMENT,
   `CustomerID` int NOT NULL,
   `PaymentID` int NOT NULL,
   `AddressID` int NOT NULL,
@@ -276,7 +276,7 @@ DROP TABLE IF EXISTS `Payment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Payment` (
-  `PaymentID` int NOT NULL,
+  `PaymentID` int NOT NULL AUTO_INCREMENT,
   `CustomerID` int NOT NULL,
   `Brand` varchar(16) NOT NULL,
   `CardNumber` bigint NOT NULL,
@@ -325,7 +325,7 @@ DROP TABLE IF EXISTS `Product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Product` (
-  `ProductID` int NOT NULL,
+  `ProductID` int NOT NULL AUTO_INCREMENT,
   `ProductName` varchar(32) NOT NULL,
   `SKU` varchar(10) NOT NULL,
   `Cost` decimal(6,2) NOT NULL,
@@ -363,7 +363,7 @@ DROP TABLE IF EXISTS `Supplier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Supplier` (
-  `SupplierID` int NOT NULL,
+  `SupplierID` int NOT NULL AUTO_INCREMENT,
   `SupplierName` varchar(16) NOT NULL,
   `Email` varchar(32) NOT NULL,
   `Phone` bigint NOT NULL,
