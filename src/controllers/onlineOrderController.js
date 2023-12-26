@@ -1,7 +1,8 @@
 // /src/controllers/onlineOrderController.js
-const express = require('express');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
-const db = require('../db');
 
 // Get all online orders
 router.get('/online-orders', (req, res) => {
@@ -98,4 +99,4 @@ router.delete('/online-orders/:id', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

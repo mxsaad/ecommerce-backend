@@ -1,7 +1,8 @@
 // /src/controllers/customerController.js
-const express = require('express');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
-const db = require('../db');
 
 // Get all customers
 router.get('/customers', (req, res) => {
@@ -98,4 +99,4 @@ router.delete('/customers/:id', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

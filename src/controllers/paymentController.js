@@ -1,7 +1,8 @@
 // /src/controllers/paymentController.js
-const express = require('express');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
-const db = require('../db');
 
 // Get all payments
 router.get('/payments', (req, res) => {
@@ -98,4 +99,4 @@ router.delete('/payments/:id', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

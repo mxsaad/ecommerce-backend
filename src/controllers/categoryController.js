@@ -1,7 +1,8 @@
 // /src/controllers/categoryController.js
-const express = require('express');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
-const db = require('../db');
 
 // Get all categories
 router.get('/categories', (req, res) => {
@@ -98,4 +99,4 @@ router.delete('/categories/:id', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

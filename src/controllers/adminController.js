@@ -1,7 +1,8 @@
 // /src/controllers/adminController.js
-const express = require('express');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
-const db = require('../db');
 
 // Get all admins
 router.get('/admins', (req, res) => {
@@ -98,4 +99,4 @@ router.delete('/admins/:id', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;
