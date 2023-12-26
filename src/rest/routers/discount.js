@@ -1,6 +1,6 @@
 // /src/controllers/discountController.js
 import express from 'express';
-import db from '../db.js';
+import db from '../../db.js';
 
 const router = express.Router();
 
