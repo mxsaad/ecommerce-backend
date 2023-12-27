@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecommerce Backend</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 20rem;
+      padding: 8px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: block;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      gap: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      text-decoration: none;
+      color: #0366d6;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #result {
+      margin-top: 20px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ecommerce Backend</h1>
+  <h3>APIs (Read-Only):</h3>
+  <ul>
+    <li><a href="/api">REST API</a></li>
+    <li><a href="/graphql">GraphQL API</a></li>
+  </ul>
+  <h3>Login to Get JSON Web Token:</h3>
+  <label for="username">Username:</label>
+  <input type="text" id="username" placeholder="Enter username">
+  <label for="password">Password:</label>
+  <input type="password" id="password" placeholder="Enter password">
+  <button onclick="login()">Login</button>
+  <div id="result"></div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const token = data.token;
+          document.getElementById('result').innerHTML = `Token: <br> ${token}`;
+        } else {
+          document.getElementById('result').innerHTML = `Authentication failed: ${data.message}`;
+        }
+      } catch (error) {
+        document.getElementById('result').innerHTML = 'Error during authentication.';
+      }
+    }
+  </script>
+</body>
+</html>

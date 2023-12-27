@@ -1,6 +1,7 @@
 // /src/controllers/supplierController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/suppliers/:id', (req, res) => {
 });
 
 // Add a new supplier
-router.post('/suppliers', (req, res) => {
+router.post('/suppliers', authenticate, (req, res) => {
   const { SupplierName, Email, Phone } = req.body;
 
   const query = 'INSERT INTO Supplier (SupplierName, Email, Phone) VALUES (?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/suppliers', (req, res) => {
 });
 
 // Update supplier by ID
-router.put('/suppliers/:id', (req, res) => {
+router.put('/suppliers/:id', authenticate, (req, res) => {
   const supplierID = req.params.id;
   const { SupplierName, Email, Phone } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/suppliers/:id', (req, res) => {
 });
 
 // Delete supplier by ID
-router.delete('/suppliers/:id', (req, res) => {
+router.delete('/suppliers/:id', authenticate, (req, res) => {
   const supplierID = req.params.id;
 
   db.query('DELETE FROM Supplier WHERE SupplierID = ?', [supplierID], (error, results) => {

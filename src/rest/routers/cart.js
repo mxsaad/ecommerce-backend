@@ -1,6 +1,7 @@
 // /src/controllers/cartController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/carts/:id', (req, res) => {
 });
 
 // Add a new cart
-router.post('/carts', (req, res) => {
+router.post('/carts', authenticate, (req, res) => {
   const { CustomerID, Total } = req.body;
 
   const query = 'INSERT INTO Cart (CustomerID, Total) VALUES (?, ?)';
@@ -56,7 +57,7 @@ router.post('/carts', (req, res) => {
 });
 
 // Update cart by ID
-router.put('/carts/:id', (req, res) => {
+router.put('/carts/:id', authenticate, (req, res) => {
   const cartID = req.params.id;
   const { CustomerID, Total } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/carts/:id', (req, res) => {
 });
 
 // Delete cart by ID
-router.delete('/carts/:id', (req, res) => {
+router.delete('/carts/:id', authenticate, (req, res) => {
   const cartID = req.params.id;
 
   db.query('DELETE FROM Cart WHERE CartID = ?', [cartID], (error, results) => {

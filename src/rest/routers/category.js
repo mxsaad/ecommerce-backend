@@ -1,6 +1,7 @@
 // /src/controllers/categoryController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/categories/:id', (req, res) => {
 });
 
 // Add a new category
-router.post('/categories', (req, res) => {
+router.post('/categories', authenticate, (req, res) => {
   const { CategoryName, CategoryDescription } = req.body;
 
   const query = 'INSERT INTO Category (CategoryName, CategoryDescription) VALUES (?, ?)';
@@ -56,7 +57,7 @@ router.post('/categories', (req, res) => {
 });
 
 // Update category by ID
-router.put('/categories/:id', (req, res) => {
+router.put('/categories/:id', authenticate, (req, res) => {
   const categoryID = req.params.id;
   const { CategoryName, CategoryDescription } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/categories/:id', (req, res) => {
 });
 
 // Delete category by ID
-router.delete('/categories/:id', (req, res) => {
+router.delete('/categories/:id', authenticate, (req, res) => {
   const categoryID = req.params.id;
 
   db.query('DELETE FROM Category WHERE CategoryID = ?', [categoryID], (error, results) => {

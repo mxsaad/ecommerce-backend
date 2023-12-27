@@ -1,6 +1,7 @@
 // /src/controllers/productController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/products/:id', (req, res) => {
 });
 
 // Add a new product
-router.post('/products', (req, res) => {
+router.post('/products', authenticate, (req, res) => {
   const { ProductName, SKU, Cost, Price, CategoryID, ProductDescription, Quantity, SupplierID } = req.body;
 
   const query = 'INSERT INTO Product (ProductName, SKU, Cost, Price, CategoryID, ProductDescription, Quantity, SupplierID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/products', (req, res) => {
 });
 
 // Update product by ID
-router.put('/products/:id', (req, res) => {
+router.put('/products/:id', authenticate, (req, res) => {
   const productID = req.params.id;
   const { ProductName, SKU, Cost, Price, CategoryID, ProductDescription, Quantity, SupplierID } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/products/:id', (req, res) => {
 });
 
 // Delete product by ID
-router.delete('/products/:id', (req, res) => {
+router.delete('/products/:id', authenticate, (req, res) => {
   const productID = req.params.id;
 
   db.query('DELETE FROM Product WHERE ProductID = ?', [productID], (error, results) => {

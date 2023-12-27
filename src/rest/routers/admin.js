@@ -1,6 +1,7 @@
 // /src/controllers/adminController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/admins/:id', (req, res) => {
 });
 
 // Add a new admin
-router.post('/admins', (req, res) => {
+router.post('/admins', authenticate, (req, res) => {
   const { FirstName, LastName, Username, Passkey, Email, Permissions } = req.body;
 
   const query = 'INSERT INTO Admin (FirstName, LastName, Username, Passkey, Email, Permissions) VALUES (?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/admins', (req, res) => {
 });
 
 // Update admin by ID
-router.put('/admins/:id', (req, res) => {
+router.put('/admins/:id', authenticate, (req, res) => {
   const adminID = req.params.id;
   const { FirstName, LastName, Username, Passkey, Email, Permissions } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/admins/:id', (req, res) => {
 });
 
 // Delete admin by ID
-router.delete('/admins/:id', (req, res) => {
+router.delete('/admins/:id', authenticate, (req, res) => {
   const adminID = req.params.id;
 
   db.query('DELETE FROM Admin WHERE AdminID = ?', [adminID], (error, results) => {

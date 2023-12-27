@@ -1,6 +1,7 @@
 // /src/controllers/discountController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/discounts/:id', (req, res) => {
 });
 
 // Add a new discount
-router.post('/discounts', (req, res) => {
+router.post('/discounts', authenticate, (req, res) => {
   const { DiscountName, DiscountDescription, Active, Percent } = req.body;
 
   const query = 'INSERT INTO Discount (DiscountName, DiscountDescription, Active, Percent) VALUES (?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/discounts', (req, res) => {
 });
 
 // Update discount by ID
-router.put('/discounts/:id', (req, res) => {
+router.put('/discounts/:id', authenticate, (req, res) => {
   const discountID = req.params.id;
   const { DiscountName, DiscountDescription, Active, Percent } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/discounts/:id', (req, res) => {
 });
 
 // Delete discount by ID
-router.delete('/discounts/:id', (req, res) => {
+router.delete('/discounts/:id', authenticate, (req, res) => {
   const discountID = req.params.id;
 
   db.query('DELETE FROM Discount WHERE DiscountID = ?', [discountID], (error, results) => {

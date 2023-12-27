@@ -1,6 +1,7 @@
 // /src/controllers/onlineOrderController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/online-orders/:id', (req, res) => {
 });
 
 // Add a new online order
-router.post('/online-orders', (req, res) => {
+router.post('/online-orders', authenticate, (req, res) => {
   const { CustomerID, PaymentID, AddressID, DiscountID, Total, OrderDate, OrderTime } = req.body;
 
   const query = 'INSERT INTO OnlineOrder (CustomerID, PaymentID, AddressID, DiscountID, Total, OrderDate, OrderTime) VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/online-orders', (req, res) => {
 });
 
 // Update online order by ID
-router.put('/online-orders/:id', (req, res) => {
+router.put('/online-orders/:id', authenticate, (req, res) => {
   const orderID = req.params.id;
   const { CustomerID, PaymentID, AddressID, DiscountID, Total, OrderDate, OrderTime } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/online-orders/:id', (req, res) => {
 });
 
 // Delete online order by ID
-router.delete('/online-orders/:id', (req, res) => {
+router.delete('/online-orders/:id', authenticate, (req, res) => {
   const orderID = req.params.id;
 
   db.query('DELETE FROM OnlineOrder WHERE OrderID = ?', [orderID], (error, results) => {

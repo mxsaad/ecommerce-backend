@@ -1,6 +1,7 @@
 // /src/controllers/paymentController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/payments/:id', (req, res) => {
 });
 
 // Add a new payment
-router.post('/payments', (req, res) => {
+router.post('/payments', authenticate, (req, res) => {
   const { CustomerID, Brand, CardNumber, ExpirationDate, FirstName, LastName, SecurityCode } = req.body;
 
   const query = 'INSERT INTO Payment (CustomerID, Brand, CardNumber, ExpirationDate, FirstName, LastName, SecurityCode) VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/payments', (req, res) => {
 });
 
 // Update payment by ID
-router.put('/payments/:id', (req, res) => {
+router.put('/payments/:id', authenticate, (req, res) => {
   const paymentID = req.params.id;
   const { CustomerID, Brand, CardNumber, ExpirationDate, FirstName, LastName, SecurityCode } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/payments/:id', (req, res) => {
 });
 
 // Delete payment by ID
-router.delete('/payments/:id', (req, res) => {
+router.delete('/payments/:id', authenticate, (req, res) => {
   const paymentID = req.params.id;
 
   db.query('DELETE FROM Payment WHERE PaymentID = ?', [paymentID], (error, results) => {

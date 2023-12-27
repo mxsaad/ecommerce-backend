@@ -1,6 +1,7 @@
 // /src/controllers/customerController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/customers/:id', (req, res) => {
 });
 
 // Add a new customer
-router.post('/customers', (req, res) => {
+router.post('/customers', authenticate, (req, res) => {
   const { FirstName, LastName, Username, Passkey, Email, Phone } = req.body;
 
   const query = 'INSERT INTO Customer (FirstName, LastName, Username, Passkey, Email, Phone) VALUES (?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/customers', (req, res) => {
 });
 
 // Update customer by ID
-router.put('/customers/:id', (req, res) => {
+router.put('/customers/:id', authenticate, (req, res) => {
   const customerID = req.params.id;
   const { FirstName, LastName, Username, Passkey, Email, Phone } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/customers/:id', (req, res) => {
 });
 
 // Delete customer by ID
-router.delete('/customers/:id', (req, res) => {
+router.delete('/customers/:id', authenticate, (req, res) => {
   const customerID = req.params.id;
 
   db.query('DELETE FROM Customer WHERE CustomerID = ?', [customerID], (error, results) => {

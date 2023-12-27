@@ -1,6 +1,7 @@
 // /src/controllers/homeAddressController.js
 import express from 'express';
 import db from '../../db.js';
+import { authenticate } from '../../auth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/home-addresses/:id', (req, res) => {
 });
 
 // Add a new home address
-router.post('/home-addresses', (req, res) => {
+router.post('/home-addresses', authenticate, (req, res) => {
   const { CustomerID, Line1, Line2, City, PostalCode, Country } = req.body;
 
   const query = 'INSERT INTO HomeAddress (CustomerID, Line1, Line2, City, PostalCode, Country) VALUES (?, ?, ?, ?, ?, ?)';
@@ -56,7 +57,7 @@ router.post('/home-addresses', (req, res) => {
 });
 
 // Update home address by ID
-router.put('/home-addresses/:id', (req, res) => {
+router.put('/home-addresses/:id', authenticate, (req, res) => {
   const addressID = req.params.id;
   const { CustomerID, Line1, Line2, City, PostalCode, Country } = req.body;
 
@@ -80,7 +81,7 @@ router.put('/home-addresses/:id', (req, res) => {
 });
 
 // Delete home address by ID
-router.delete('/home-addresses/:id', (req, res) => {
+router.delete('/home-addresses/:id', authenticate, (req, res) => {
   const addressID = req.params.id;
 
   db.query('DELETE FROM HomeAddress WHERE AddressID = ?', [addressID], (error, results) => {
