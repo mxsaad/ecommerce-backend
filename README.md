@@ -1,7 +1,3 @@
-Certainly! Below is a sample README for your project:
-
----
-
 # Ecommerce Platform Backend
 
 ## Overview
