@@ -8,6 +8,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const AdminType = new GraphQLObjectType({
   name: 'Admin',
@@ -65,7 +66,8 @@ const AdminMutation = {
       Email: { type: new GraphQLNonNull(GraphQLString) },
       Permissions: { type: GraphQLInt },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Admin (FirstName, LastName, Username, Passkey, Email, Permissions) VALUES (?, ?, ?, ?, ?, ?)',
@@ -99,7 +101,8 @@ const AdminMutation = {
       Email: { type: GraphQLString },
       Permissions: { type: GraphQLInt },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { AdminID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -134,7 +137,8 @@ const AdminMutation = {
     args: {
       AdminID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { AdminID } = args;
 
       return new Promise((resolve, reject) => {

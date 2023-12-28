@@ -9,6 +9,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const OnlineOrderType = new GraphQLObjectType({
   name: 'OnlineOrder',
@@ -68,7 +69,8 @@ const OnlineOrderMutation = {
       OrderDate: { type: new GraphQLNonNull(GraphQLString) },
       OrderTime: { type: new GraphQLNonNull(GraphQLString) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO OnlineOrder (CustomerID, PaymentID, AddressID, DiscountID, Total, OrderDate, OrderTime) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -103,7 +105,8 @@ const OnlineOrderMutation = {
       OrderDate: { type: GraphQLString },
       OrderTime: { type: GraphQLString },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { OrderID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -138,7 +141,8 @@ const OnlineOrderMutation = {
     args: {
       OrderID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { OrderID } = args;
 
       return new Promise((resolve, reject) => {

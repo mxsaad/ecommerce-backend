@@ -7,6 +7,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const CartType = new GraphQLObjectType({
   name: 'Cart',
@@ -56,7 +57,8 @@ const CartMutation = {
       CustomerID: { type: new GraphQLNonNull(GraphQLID) },
       Total: { type: GraphQLFloat },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Cart (CustomerID, Total) VALUES (?, ?)',
@@ -85,7 +87,8 @@ const CartMutation = {
       CartID: { type: new GraphQLNonNull(GraphQLID) },
       Total: { type: GraphQLFloat },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CartID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -120,7 +123,8 @@ const CartMutation = {
     args: {
       CartID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CartID } = args;
 
       return new Promise((resolve, reject) => {

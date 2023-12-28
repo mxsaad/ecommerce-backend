@@ -7,6 +7,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const CategoryType = new GraphQLObjectType({
   name: 'Category',
@@ -56,7 +57,8 @@ const CategoryMutation = {
       CategoryName: { type: new GraphQLNonNull(GraphQLString) },
       CategoryDescription: { type: new GraphQLNonNull(GraphQLString) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Category (CategoryName, CategoryDescription) VALUES (?, ?)',
@@ -86,7 +88,8 @@ const CategoryMutation = {
       CategoryName: { type: GraphQLString },
       CategoryDescription: { type: GraphQLString },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CategoryID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -121,7 +124,8 @@ const CategoryMutation = {
     args: {
       CategoryID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CategoryID } = args;
 
       return new Promise((resolve, reject) => {

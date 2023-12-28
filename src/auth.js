@@ -5,8 +5,24 @@ export const createToken = (userId) => {
   return jwt.sign({ userId }, process.env.AUTH_TOKEN_SECRET, { expiresIn: '1h' });
 };
 
+export const authenticateGraphQL = (context) => {
+  let token = context.headers.authorization;
+  if (!token) {
+    throw new Error('Unauthorized - Missing token');
+  }
+  try {
+    token = token.replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.AUTH_TOKEN_SECRET);
+    if (!decoded.userId) {
+      throw new Error('Unauthorized - Invalid token');
+    }
+  } catch (error) {
+    throw new Error('Unauthorized - Invalid token');
+  }
+}
+
 export const authenticate = (req, res, next) => {
-  let token = req.header('Authorization');
+  token = req.header('Authorization');
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized - Missing token' });
   }

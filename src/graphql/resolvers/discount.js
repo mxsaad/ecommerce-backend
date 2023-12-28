@@ -9,6 +9,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const DiscountType = new GraphQLObjectType({
   name: 'Discount',
@@ -62,7 +63,8 @@ const DiscountMutation = {
       Active: { type: GraphQLInt },
       Percent: { type: new GraphQLNonNull(GraphQLFloat) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Discount (DiscountName, DiscountDescription, Active, Percent) VALUES (?, ?, ?, ?)',
@@ -94,7 +96,8 @@ const DiscountMutation = {
       Active: { type: GraphQLInt },
       Percent: { type: GraphQLFloat },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { DiscountID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -129,7 +132,8 @@ const DiscountMutation = {
     args: {
       DiscountID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { DiscountID } = args;
 
       return new Promise((resolve, reject) => {

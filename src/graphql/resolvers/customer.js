@@ -8,6 +8,7 @@ import {
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const CustomerType = new GraphQLObjectType({
   name: 'Customer',
@@ -65,7 +66,8 @@ const CustomerMutation = {
       Email: { type: new GraphQLNonNull(GraphQLString) },
       Phone: { type: new GraphQLNonNull(GraphQLBigInt) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Customer (FirstName, LastName, Username, Passkey, Email, Phone) VALUES (?, ?, ?, ?, ?, ?)',
@@ -99,7 +101,8 @@ const CustomerMutation = {
       Email: { type: GraphQLString },
       Phone: { type: GraphQLBigInt },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CustomerID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -134,7 +137,8 @@ const CustomerMutation = {
     args: {
       CustomerID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { CustomerID } = args;
 
       return new Promise((resolve, reject) => {

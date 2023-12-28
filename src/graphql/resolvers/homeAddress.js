@@ -7,6 +7,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const HomeAddressType = new GraphQLObjectType({
   name: 'HomeAddress',
@@ -64,7 +65,8 @@ const HomeAddressMutation = {
       PostalCode: { type: new GraphQLNonNull(GraphQLString) },
       Country: { type: new GraphQLNonNull(GraphQLString) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO HomeAddress (CustomerID, Line1, Line2, City, PostalCode, Country) VALUES (?, ?, ?, ?, ?, ?)',
@@ -97,7 +99,8 @@ const HomeAddressMutation = {
       PostalCode: { type: GraphQLString },
       Country: { type: GraphQLString },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { AddressID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -132,7 +135,8 @@ const HomeAddressMutation = {
     args: {
       AddressID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { AddressID } = args;
 
       return new Promise((resolve, reject) => {

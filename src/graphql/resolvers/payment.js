@@ -9,6 +9,7 @@ import {
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
 import pool from '../../db.js';
+import { authenticateGraphQL } from '../../auth.js';
 
 const PaymentType = new GraphQLObjectType({
   name: 'Payment',
@@ -68,7 +69,8 @@ const PaymentMutation = {
       LastName: { type: new GraphQLNonNull(GraphQLString) },
       SecurityCode: { type: new GraphQLNonNull(GraphQLInt) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
         pool.query(
           'INSERT INTO Payment (CustomerID, Brand, CardNumber, ExpirationDate, FirstName, LastName, SecurityCode) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -102,7 +104,8 @@ const PaymentMutation = {
       LastName: { type: GraphQLString },
       SecurityCode: { type: GraphQLInt },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { PaymentID, ...updatedFields } = args;
       const updateQuery = Object.entries(updatedFields)
         .map(([field, value]) => (value !== undefined ? `${field} = ?` : null))
@@ -137,7 +140,8 @@ const PaymentMutation = {
     args: {
       PaymentID: { type: new GraphQLNonNull(GraphQLID) },
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, context) => {
+      authenticateGraphQL(context);
       const { PaymentID } = args;
 
       return new Promise((resolve, reject) => {
