@@ -1,4 +1,4 @@
-// /src/app.js
+// /src/index.js
 import express from 'express';
 import bodyParser from 'body-parser';
 import { graphqlHTTP } from 'express-graphql';
@@ -57,3 +57,5 @@ app.use('/graphql', graphqlHTTP({
 app.listen(PORT, () => {
   console.log(`Server is running at https://localhost:${PORT}`);
 });
+
+export default app;
