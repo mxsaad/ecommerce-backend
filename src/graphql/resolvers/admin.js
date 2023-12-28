@@ -7,7 +7,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const AdminType = new GraphQLObjectType({
@@ -29,7 +29,7 @@ const AdminQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Admin WHERE AdminID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Admin WHERE AdminID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -43,7 +43,7 @@ const AdminQuery = {
     type: new GraphQLList(AdminType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Admin', (err, results) => {
+        db.query('SELECT * FROM Admin', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -69,7 +69,7 @@ const AdminMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Admin (FirstName, LastName, Username, Passkey, Email, Permissions) VALUES (?, ?, ?, ?, ?, ?)',
           [args.FirstName, args.LastName, args.Username, args.Passkey, args.Email, args.Permissions],
           (err, result) => {
@@ -77,7 +77,7 @@ const AdminMutation = {
               reject(err);
             } else {
               const newAdminID = result.insertId;
-              pool.query('SELECT * FROM Admin WHERE AdminID = ?', [newAdminID], (err, results) => {
+              db.query('SELECT * FROM Admin WHERE AdminID = ?', [newAdminID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -116,11 +116,11 @@ const AdminMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Admin SET ${updateQuery} WHERE AdminID = ?`, [...values, AdminID], (err, result) => {
+        db.query(`UPDATE Admin SET ${updateQuery} WHERE AdminID = ?`, [...values, AdminID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Admin WHERE AdminID = ?', [AdminID], (err, results) => {
+            db.query('SELECT * FROM Admin WHERE AdminID = ?', [AdminID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -142,12 +142,12 @@ const AdminMutation = {
       const { AdminID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Admin WHERE AdminID = ?', [AdminID], (err, results) => {
+        db.query('SELECT * FROM Admin WHERE AdminID = ?', [AdminID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const adminToDelete = results[0];
-            pool.query('DELETE FROM Admin WHERE AdminID = ?', [AdminID], (err) => {
+            db.query('DELETE FROM Admin WHERE AdminID = ?', [AdminID], (err) => {
               if (err) {
                 reject(err);
               } else {

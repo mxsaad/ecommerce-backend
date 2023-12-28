@@ -7,7 +7,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const ProductType = new GraphQLObjectType({
@@ -31,7 +31,7 @@ const ProductQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Product WHERE ProductID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Product WHERE ProductID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -45,7 +45,7 @@ const ProductQuery = {
     type: new GraphQLList(ProductType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Product', (err, results) => {
+        db.query('SELECT * FROM Product', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -73,7 +73,7 @@ const ProductMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Product (ProductName, SKU, Cost, Price, CategoryID, ProductDescription, Quantity, SupplierID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           [args.ProductName, args.SKU, args.Cost, args.Price, args.CategoryID, args.ProductDescription, args.Quantity, args.SupplierID],
           (err, result) => {
@@ -81,7 +81,7 @@ const ProductMutation = {
               reject(err);
             } else {
               const newProductID = result.insertId;
-              pool.query('SELECT * FROM Product WHERE ProductID = ?', [newProductID], (err, results) => {
+              db.query('SELECT * FROM Product WHERE ProductID = ?', [newProductID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -122,11 +122,11 @@ const ProductMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Product SET ${updateQuery} WHERE ProductID = ?`, [...values, ProductID], (err, result) => {
+        db.query(`UPDATE Product SET ${updateQuery} WHERE ProductID = ?`, [...values, ProductID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Product WHERE ProductID = ?', [ProductID], (err, results) => {
+            db.query('SELECT * FROM Product WHERE ProductID = ?', [ProductID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -148,12 +148,12 @@ const ProductMutation = {
       const { ProductID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Product WHERE ProductID = ?', [ProductID], (err, results) => {
+        db.query('SELECT * FROM Product WHERE ProductID = ?', [ProductID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const productToDelete = results[0];
-            pool.query('DELETE FROM Product WHERE ProductID = ?', [ProductID], (err) => {
+            db.query('DELETE FROM Product WHERE ProductID = ?', [ProductID], (err) => {
               if (err) {
                 reject(err);
               } else {

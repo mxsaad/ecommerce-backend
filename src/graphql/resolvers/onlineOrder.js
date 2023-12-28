@@ -8,7 +8,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const OnlineOrderType = new GraphQLObjectType({
@@ -31,7 +31,7 @@ const OnlineOrderQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -45,7 +45,7 @@ const OnlineOrderQuery = {
     type: new GraphQLList(OnlineOrderType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM OnlineOrder', (err, results) => {
+        db.query('SELECT * FROM OnlineOrder', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -72,7 +72,7 @@ const OnlineOrderMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO OnlineOrder (CustomerID, PaymentID, AddressID, DiscountID, Total, OrderDate, OrderTime) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [args.CustomerID, args.PaymentID, args.AddressID, args.DiscountID || null, args.Total, args.OrderDate, args.OrderTime],
           (err, result) => {
@@ -80,7 +80,7 @@ const OnlineOrderMutation = {
               reject(err);
             } else {
               const newOrderID = result.insertId;
-              pool.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [newOrderID], (err, results) => {
+              db.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [newOrderID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -120,11 +120,11 @@ const OnlineOrderMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE OnlineOrder SET ${updateQuery} WHERE OrderID = ?`, [...values, OrderID], (err, result) => {
+        db.query(`UPDATE OnlineOrder SET ${updateQuery} WHERE OrderID = ?`, [...values, OrderID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err, results) => {
+            db.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -146,12 +146,12 @@ const OnlineOrderMutation = {
       const { OrderID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err, results) => {
+        db.query('SELECT * FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const orderToDelete = results[0];
-            pool.query('DELETE FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err) => {
+            db.query('DELETE FROM OnlineOrder WHERE OrderID = ?', [OrderID], (err) => {
               if (err) {
                 reject(err);
               } else {

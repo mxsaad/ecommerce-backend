@@ -1,11 +1,8 @@
 // /src/db.js
 import mysql from 'mysql2';
+import dotenv from 'dotenv';
 
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'user',
-  database: 'ecommerce',
-  connectionLimit: 10,
-});
+dotenv.config();
+const db = mysql.createConnection(process.env.DATABASE_URL);
 
-export default pool;
+export default db;

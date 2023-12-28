@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const CategoryType = new GraphQLObjectType({
@@ -24,7 +24,7 @@ const CategoryQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Category WHERE CategoryID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Category WHERE CategoryID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -38,7 +38,7 @@ const CategoryQuery = {
     type: new GraphQLList(CategoryType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Category', (err, results) => {
+        db.query('SELECT * FROM Category', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -60,7 +60,7 @@ const CategoryMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Category (CategoryName, CategoryDescription) VALUES (?, ?)',
           [args.CategoryName, args.CategoryDescription],
           (err, result) => {
@@ -68,7 +68,7 @@ const CategoryMutation = {
               reject(err);
             } else {
               const newCategoryID = result.insertId;
-              pool.query('SELECT * FROM Category WHERE CategoryID = ?', [newCategoryID], (err, results) => {
+              db.query('SELECT * FROM Category WHERE CategoryID = ?', [newCategoryID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -103,11 +103,11 @@ const CategoryMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Category SET ${updateQuery} WHERE CategoryID = ?`, [...values, CategoryID], (err, result) => {
+        db.query(`UPDATE Category SET ${updateQuery} WHERE CategoryID = ?`, [...values, CategoryID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Category WHERE CategoryID = ?', [CategoryID], (err, results) => {
+            db.query('SELECT * FROM Category WHERE CategoryID = ?', [CategoryID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -129,12 +129,12 @@ const CategoryMutation = {
       const { CategoryID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Category WHERE CategoryID = ?', [CategoryID], (err, results) => {
+        db.query('SELECT * FROM Category WHERE CategoryID = ?', [CategoryID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const categoryToDelete = results[0];
-            pool.query('DELETE FROM Category WHERE CategoryID = ?', [CategoryID], (err) => {
+            db.query('DELETE FROM Category WHERE CategoryID = ?', [CategoryID], (err) => {
               if (err) {
                 reject(err);
               } else {

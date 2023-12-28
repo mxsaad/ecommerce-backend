@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const CartType = new GraphQLObjectType({
@@ -24,7 +24,7 @@ const CartQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Cart WHERE CartID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Cart WHERE CartID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -38,7 +38,7 @@ const CartQuery = {
     type: new GraphQLList(CartType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Cart', (err, results) => {
+        db.query('SELECT * FROM Cart', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -60,7 +60,7 @@ const CartMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Cart (CustomerID, Total) VALUES (?, ?)',
           [args.CustomerID, args.Total || 0.0],
           (err, result) => {
@@ -68,7 +68,7 @@ const CartMutation = {
               reject(err);
             } else {
               const newCartID = result.insertId;
-              pool.query('SELECT * FROM Cart WHERE CartID = ?', [newCartID], (err, results) => {
+              db.query('SELECT * FROM Cart WHERE CartID = ?', [newCartID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -102,11 +102,11 @@ const CartMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Cart SET ${updateQuery} WHERE CartID = ?`, [...values, CartID], (err, result) => {
+        db.query(`UPDATE Cart SET ${updateQuery} WHERE CartID = ?`, [...values, CartID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Cart WHERE CartID = ?', [CartID], (err, results) => {
+            db.query('SELECT * FROM Cart WHERE CartID = ?', [CartID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -128,12 +128,12 @@ const CartMutation = {
       const { CartID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Cart WHERE CartID = ?', [CartID], (err, results) => {
+        db.query('SELECT * FROM Cart WHERE CartID = ?', [CartID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const cartToDelete = results[0];
-            pool.query('DELETE FROM Cart WHERE CartID = ?', [CartID], (err) => {
+            db.query('DELETE FROM Cart WHERE CartID = ?', [CartID], (err) => {
               if (err) {
                 reject(err);
               } else {

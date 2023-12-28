@@ -8,7 +8,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const PaymentType = new GraphQLObjectType({
@@ -31,7 +31,7 @@ const PaymentQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Payment WHERE PaymentID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Payment WHERE PaymentID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -45,7 +45,7 @@ const PaymentQuery = {
     type: new GraphQLList(PaymentType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Payment', (err, results) => {
+        db.query('SELECT * FROM Payment', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -72,7 +72,7 @@ const PaymentMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Payment (CustomerID, Brand, CardNumber, ExpirationDate, FirstName, LastName, SecurityCode) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [args.CustomerID, args.Brand, args.CardNumber, args.ExpirationDate, args.FirstName, args.LastName, args.SecurityCode],
           (err, result) => {
@@ -80,7 +80,7 @@ const PaymentMutation = {
               reject(err);
             } else {
               const newPaymentID = result.insertId;
-              pool.query('SELECT * FROM Payment WHERE PaymentID = ?', [newPaymentID], (err, results) => {
+              db.query('SELECT * FROM Payment WHERE PaymentID = ?', [newPaymentID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -119,11 +119,11 @@ const PaymentMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Payment SET ${updateQuery} WHERE PaymentID = ?`, [...values, PaymentID], (err, result) => {
+        db.query(`UPDATE Payment SET ${updateQuery} WHERE PaymentID = ?`, [...values, PaymentID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Payment WHERE PaymentID = ?', [PaymentID], (err, results) => {
+            db.query('SELECT * FROM Payment WHERE PaymentID = ?', [PaymentID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -145,12 +145,12 @@ const PaymentMutation = {
       const { PaymentID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Payment WHERE PaymentID = ?', [PaymentID], (err, results) => {
+        db.query('SELECT * FROM Payment WHERE PaymentID = ?', [PaymentID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const paymentToDelete = results[0];
-            pool.query('DELETE FROM Payment WHERE PaymentID = ?', [PaymentID], (err) => {
+            db.query('DELETE FROM Payment WHERE PaymentID = ?', [PaymentID], (err) => {
               if (err) {
                 reject(err);
               } else {

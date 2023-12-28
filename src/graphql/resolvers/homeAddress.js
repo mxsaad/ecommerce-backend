@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const HomeAddressType = new GraphQLObjectType({
@@ -28,7 +28,7 @@ const HomeAddressQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -42,7 +42,7 @@ const HomeAddressQuery = {
     type: new GraphQLList(HomeAddressType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM HomeAddress', (err, results) => {
+        db.query('SELECT * FROM HomeAddress', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -68,7 +68,7 @@ const HomeAddressMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO HomeAddress (CustomerID, Line1, Line2, City, PostalCode, Country) VALUES (?, ?, ?, ?, ?, ?)',
           [args.CustomerID, args.Line1, args.Line2 || null, args.City, args.PostalCode, args.Country],
           (err, result) => {
@@ -76,7 +76,7 @@ const HomeAddressMutation = {
               reject(err);
             } else {
               const newAddressID = result.insertId;
-              pool.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [newAddressID], (err, results) => {
+              db.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [newAddressID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -114,11 +114,11 @@ const HomeAddressMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE HomeAddress SET ${updateQuery} WHERE AddressID = ?`, [...values, AddressID], (err, result) => {
+        db.query(`UPDATE HomeAddress SET ${updateQuery} WHERE AddressID = ?`, [...values, AddressID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [AddressID], (err, results) => {
+            db.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [AddressID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -140,12 +140,12 @@ const HomeAddressMutation = {
       const { AddressID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [AddressID], (err, results) => {
+        db.query('SELECT * FROM HomeAddress WHERE AddressID = ?', [AddressID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const addressToDelete = results[0];
-            pool.query('DELETE FROM HomeAddress WHERE AddressID = ?', [AddressID], (err) => {
+            db.query('DELETE FROM HomeAddress WHERE AddressID = ?', [AddressID], (err) => {
               if (err) {
                 reject(err);
               } else {

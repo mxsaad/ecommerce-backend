@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const SupplierType = new GraphQLObjectType({
@@ -25,7 +25,7 @@ const SupplierQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Supplier WHERE SupplierID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Supplier WHERE SupplierID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -39,7 +39,7 @@ const SupplierQuery = {
     type: new GraphQLList(SupplierType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Supplier', (err, results) => {
+        db.query('SELECT * FROM Supplier', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -62,7 +62,7 @@ const SupplierMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Supplier (SupplierName, Email, Phone) VALUES (?, ?, ?)',
           [args.SupplierName, args.Email, args.Phone],
           (err, result) => {
@@ -70,7 +70,7 @@ const SupplierMutation = {
               reject(err);
             } else {
               const newSupplierID = result.insertId;
-              pool.query('SELECT * FROM Supplier WHERE SupplierID = ?', [newSupplierID], (err, results) => {
+              db.query('SELECT * FROM Supplier WHERE SupplierID = ?', [newSupplierID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -106,11 +106,11 @@ const SupplierMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Supplier SET ${updateQuery} WHERE SupplierID = ?`, [...values, SupplierID], (err, result) => {
+        db.query(`UPDATE Supplier SET ${updateQuery} WHERE SupplierID = ?`, [...values, SupplierID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Supplier WHERE SupplierID = ?', [SupplierID], (err, results) => {
+            db.query('SELECT * FROM Supplier WHERE SupplierID = ?', [SupplierID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -132,12 +132,12 @@ const SupplierMutation = {
       const { SupplierID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Supplier WHERE SupplierID = ?', [SupplierID], (err, results) => {
+        db.query('SELECT * FROM Supplier WHERE SupplierID = ?', [SupplierID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const supplierToDelete = results[0];
-            pool.query('DELETE FROM Supplier WHERE SupplierID = ?', [SupplierID], (err) => {
+            db.query('DELETE FROM Supplier WHERE SupplierID = ?', [SupplierID], (err) => {
               if (err) {
                 reject(err);
               } else {

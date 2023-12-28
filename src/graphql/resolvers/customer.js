@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
-import pool from '../../db.js';
+import db from '../../db.js';
 import { authenticateGraphQL } from '../../auth.js';
 
 const CustomerType = new GraphQLObjectType({
@@ -29,7 +29,7 @@ const CustomerQuery = {
     args: { id: { type: GraphQLID } },
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Customer WHERE CustomerID = ?', [args.id], (err, results) => {
+        db.query('SELECT * FROM Customer WHERE CustomerID = ?', [args.id], (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -43,7 +43,7 @@ const CustomerQuery = {
     type: new GraphQLList(CustomerType),
     resolve(parent, args) {
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Customer', (err, results) => {
+        db.query('SELECT * FROM Customer', (err, results) => {
           if (err) {
             reject(err);
           } else {
@@ -69,7 +69,7 @@ const CustomerMutation = {
     resolve: async (parent, args, context) => {
       authenticateGraphQL(context);
       return new Promise((resolve, reject) => {
-        pool.query(
+        db.query(
           'INSERT INTO Customer (FirstName, LastName, Username, Passkey, Email, Phone) VALUES (?, ?, ?, ?, ?, ?)',
           [args.FirstName, args.LastName, args.Username, args.Passkey, args.Email, args.Phone],
           (err, result) => {
@@ -77,7 +77,7 @@ const CustomerMutation = {
               reject(err);
             } else {
               const newCustomerID = result.insertId;
-              pool.query('SELECT * FROM Customer WHERE CustomerID = ?', [newCustomerID], (err, results) => {
+              db.query('SELECT * FROM Customer WHERE CustomerID = ?', [newCustomerID], (err, results) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -116,11 +116,11 @@ const CustomerMutation = {
       const values = Object.values(updatedFields).filter((value) => value !== undefined);
 
       return new Promise((resolve, reject) => {
-        pool.query(`UPDATE Customer SET ${updateQuery} WHERE CustomerID = ?`, [...values, CustomerID], (err, result) => {
+        db.query(`UPDATE Customer SET ${updateQuery} WHERE CustomerID = ?`, [...values, CustomerID], (err, result) => {
           if (err) {
             reject(err);
           } else {
-            pool.query('SELECT * FROM Customer WHERE CustomerID = ?', [CustomerID], (err, results) => {
+            db.query('SELECT * FROM Customer WHERE CustomerID = ?', [CustomerID], (err, results) => {
               if (err) {
                 reject(err);
               } else {
@@ -142,12 +142,12 @@ const CustomerMutation = {
       const { CustomerID } = args;
 
       return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Customer WHERE CustomerID = ?', [CustomerID], (err, results) => {
+        db.query('SELECT * FROM Customer WHERE CustomerID = ?', [CustomerID], (err, results) => {
           if (err) {
             reject(err);
           } else {
             const customerToDelete = results[0];
-            pool.query('DELETE FROM Customer WHERE CustomerID = ?', [CustomerID], (err) => {
+            db.query('DELETE FROM Customer WHERE CustomerID = ?', [CustomerID], (err) => {
               if (err) {
                 reject(err);
               } else {
